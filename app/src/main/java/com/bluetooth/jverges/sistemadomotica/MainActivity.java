@@ -27,6 +27,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private String readBuffer = "";
     public static MainActivity mainActivity = null;
     public static ArrayList<String> toNotify = new ArrayList<>(9);
+    public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("k:m");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,13 +199,15 @@ public class MainActivity extends AppCompatActivity
                     BluetoothDevice device = (BluetoothDevice) devices[pos];
                     ParcelUuid[] uuids = device.getUuids();
                     BluetoothSocket socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
-                    socket.connect();
-                    outputStream = socket.getOutputStream();
-                    inStream = socket.getInputStream();
+                    try {
+                        socket.connect();
+                        inStream = socket.getInputStream();
+                        outputStream = socket.getOutputStream();
+                    } catch (IOException e) {
+                        Log.d("tag", "Esta vinculado pero no se puede abrir el socket al dispositivo, comprobar el rango");
+                    }
 
                     new Thread(new Runnable() {
-
-
                         @TargetApi(Build.VERSION_CODES.KITKAT)
                         public void run() {
                             Log.d("bt domotica", "Init thread");
@@ -266,45 +271,50 @@ public class MainActivity extends AppCompatActivity
 
                         }
                     }).start();
+                } else {
+                    Log.e("tag", "dispositivo no vinculado");
                 }
             } else {
-                Log.e("error", "Bluetooth is disabled.");
+                Log.e("error", "Bluetooth is disabled, open dialog and settings.");
             }
         }
     }
 
-    public void write(String s) throws IOException {
-        outputStream.write(s.getBytes());
+    public void write(String s) {
+        try {
+            outputStream.write(s.getBytes());
+        } catch (IOException e) {
+            Log.d("tag", "fail write in bt, try to reconnect");
+            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d("tag", "fail, ex");
+
+            e.printStackTrace();
+        }
     }
 
     public void onClick2(View v) {
-        try {
-            Log.d("tag", "enviar");
-            write("C-22:14;");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        Log.d("tag", "enviar");
+        write("C-22:14;");
+
     }
 
     public void onClick3(View v) {
-        try {
-            Log.d("tag", "enviar comando");
-            DateTime t = new DateTime();
-            String s = String.format(
-                    "T-%s:%s:%s:%s:%s:%s;",
-                    Integer.toString(t.getYear()).substring(2, 4),
-                    String.format("%02d", t.getMonthOfYear()),
-                    String.format("%02d", t.getDayOfMonth()),
-                    String.format("%02d", t.getHourOfDay()),
-                    String.format("%02d", t.getMinuteOfHour()),
-                    String.format("%02d", t.getSecondOfMinute()));
-            Log.d("tag", s);
-            write(s);
 
+        Log.d("tag", "enviar comando");
+        DateTime t = new DateTime();
+        String s = String.format(
+                "T-%s:%s:%s:%s:%s:%s;",
+                Integer.toString(t.getYear()).substring(2, 4),
+                String.format("%02d", t.getMonthOfYear()),
+                String.format("%02d", t.getDayOfMonth()),
+                String.format("%02d", t.getHourOfDay()),
+                String.format("%02d", t.getMinuteOfHour()),
+                String.format("%02d", t.getSecondOfMinute()));
+        Log.d("tag", s);
+        write(s);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private static StatusItem current = null;
@@ -323,71 +333,43 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClickDesactivarRiego(View v) {
-        try {
-            Log.d("tag", "Desactivar riego");
-            write("F");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Desactivar riego");
+        write("F");
     }
 
     public void onClickActivarRiego(View v) {
-        try {
-            Log.d("tag", "Activar riego");
-            write("E");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Activar riego");
+        write("E");
     }
 
 
     public void onClickPrenderLuces(View v) {
-        try {
-            Log.d("tag", "Prender Luces");
-            write("G");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Prender Luces");
+        write("G");
     }
 
     public void onClickApagarLuces(View v) {
-        try {
-            Log.d("tag", "Apagar Luces");
-            write("H");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Apagar Luces");
+        write("H");
     }
 
     public void onClickPanicoAlarma(View v) {
-        try {
-            Log.d("tag", "Panico alarma");
-            write("p");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Panico alarma");
+        write("p");
     }
 
     public void onClickActivarAlarma(View v) {
-        try {
-            Log.d("tag", "Activar Alarma");
-            write("a");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Activar Alarma");
+        write("a");
     }
 
     public void onClickDesactivarAlarma(View v) {
-        try {
-            Log.d("tag", "Desactivar alarma");
-            write("d");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("tag", "Desactivar alarma");
+        write("d");
     }
 
     public void setTime(int hour, int minutes) {
-        Log.d("tag", "Time!");
+        //el date time no esta mutado, por eso lo transformo..
         MainActivity.current.time.setHourOfDay(hour);
         MainActivity.current.time.setMinuteOfHour(minutes);
         String s = String.format(
@@ -396,14 +378,9 @@ public class MainActivity extends AppCompatActivity
                 String.format("%02d", hour),
                 String.format("%02d", minutes));
         Log.d("tag", "Send time: " + s);
-        try {
-            write(s);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //el date time ya esta mutado.
         //hay que enviarlo a la placa por bluetooth para que se modifique.
+        write(s);
+
 
     }
 

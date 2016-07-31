@@ -84,13 +84,13 @@ public class StatusFragment extends Fragment implements StatusUpdate {
         luces_hora_on = (TextView) this.view.findViewById(R.id.status_luces_hora_on);
         luces_hora_off = (TextView) this.view.findViewById(R.id.status_luces_hora_off);
         riego_1_on = (TextView) this.view.findViewById(R.id.status_riego_1_on);
-        riego_1_on = (TextView) this.view.findViewById(R.id.status_riego_1_on);
+        riego_2_on = (TextView) this.view.findViewById(R.id.status_riego_2_on);
         this.alarma = (TextView) this.view.findViewById(R.id.txtEstadoAlarma);
 
-        if (mainActivity == null) {
-            this.mainActivity = MainActivity.mainActivity;
+        if (null == mainActivity) {
+            mainActivity = MainActivity.mainActivity;
         }
-        this.mainActivity.status.addToNotify(this);
+        mainActivity.status.addToNotify(this);
 
         return view;
     }
@@ -121,7 +121,27 @@ public class StatusFragment extends Fragment implements StatusUpdate {
 
     @Override
     public void Update() {
-        this.hora.setText(this.mainActivity.status.hora.toString());
+
+        this.hora.setText(mainActivity.status.hora.toString());
+        this.luces_hora_on.setText(mainActivity.status.hora_luces_on.toString(MainActivity.formatterTime));
+        this.luces_hora_off.setText(mainActivity.status.hora_luces_off.toString(MainActivity.formatterTime));
+        this.riego_1_on.setText(mainActivity.status.hora_riego_1_on.toString(MainActivity.formatterTime));
+        this.riego_2_on.setText(mainActivity.status.hora_riego_2_on.toString(MainActivity.formatterTime));
+
+        String s = "";
+        switch (mainActivity.status.alarma) {
+            case "a":
+                s = mainActivity.getString(R.string.activada);
+                break;
+            case "d":
+                s = mainActivity.getString(R.string.desactivada);
+                break;
+            case "p":
+                s = mainActivity.getString(R.string.panico);
+                break;
+        }
+
+        this.alarma.setText(s);
     }
 
     /**

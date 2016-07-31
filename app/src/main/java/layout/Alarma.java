@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.bluetooth.jverges.sistemadomotica.MainActivity;
 import com.bluetooth.jverges.sistemadomotica.R;
@@ -32,6 +34,11 @@ public class Alarma extends Fragment implements StatusUpdate {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private android.widget.Button btnOnAlarma;
+    private android.widget.Button btnOffAlarma;
+    private android.widget.Button btnPanico;
+    private android.widget.TextView textView8;
+    private android.widget.TextView statusalarma;
 
     public Alarma() {
         // Required empty public constructor
@@ -69,7 +76,11 @@ public class Alarma extends Fragment implements StatusUpdate {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_alarma, container, false);
-
+        this.statusalarma = (TextView) rootView.findViewById(R.id.status_alarma);
+        this.textView8 = (TextView) rootView.findViewById(R.id.textView8);
+        this.btnPanico = (Button) rootView.findViewById(R.id.btnPanico);
+        this.btnOffAlarma = (Button) rootView.findViewById(R.id.btnOffAlarma);
+        this.btnOnAlarma = (Button) rootView.findViewById(R.id.btnOnAlarma);
 
 
         return rootView;
@@ -103,6 +114,20 @@ public class Alarma extends Fragment implements StatusUpdate {
     @Override
     public void Update() {
 
+        String s = "";
+        switch (this.mainActivity.status.alarma) {
+            case "a":
+                s = mainActivity.getString(R.string.activada);
+                break;
+            case "d":
+                s = mainActivity.getString(R.string.desactivada);
+                break;
+            case "p":
+                s = mainActivity.getString(R.string.panico);
+                break;
+        }
+
+        this.statusalarma.setText(s);
     }
 
     /**

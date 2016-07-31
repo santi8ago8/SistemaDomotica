@@ -22,4 +22,10 @@
     <string name="desactivar">Desactivar</string>
     <string name="panico">Pánico</string>
     <string name="nombre">Juani</string>
+    <string name="no_regando">No regando</string>
+    <string name="regando">Regando</string>
+    <string name="activada">Activada</string>
+    <string name="desactivada">Desactivada</string>
+    <string name="luces_prendidas">Luces prendidas</string>
+    <string name="luces_apagadas">Luces Apagadas</string>
 </resources>

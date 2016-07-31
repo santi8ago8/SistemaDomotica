@@ -15,6 +15,8 @@ import com.bluetooth.jverges.sistemadomotica.R;
 import com.bluetooth.jverges.sistemadomotica.StatusItem;
 import com.bluetooth.jverges.sistemadomotica.StatusUpdate;
 
+import org.joda.time.format.DateTimeFormatter;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -148,10 +150,9 @@ public class Riego extends Fragment implements StatusUpdate {
 
     @Override
     public void Update() {
-        this.statusriego1on.setText(this.mainActivity.status.hora_riego_1_on.toString("k:m"));
-        //this.statusriego1off.setText(this.mainActivity.status.hora_riego_1_off.toString("k:m"));
-        this.statusriego2on.setText(this.mainActivity.status.hora_riego_2_on.toString("k:m"));
-        //this.statusriego2off.setText(this.mainActivity.status.hora_riego_2_off.toString("k:m"));
+        this.statusriego1on.setText(this.mainActivity.status.hora_riego_1_on.toString(MainActivity.formatterTime));
+        this.statusriego2on.setText(this.mainActivity.status.hora_riego_2_on.toString(MainActivity.formatterTime));
+        this.statusriego.setText(this.mainActivity.status.Sriego?mainActivity.getString(R.string.regando):mainActivity.getString(R.string.no_regando));
     }
 
     /**

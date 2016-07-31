@@ -23,7 +23,7 @@ import com.bluetooth.jverges.sistemadomotica.StatusUpdate;
  * Use the {@link Luces#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Luces extends Fragment implements StatusUpdate{
+public class Luces extends Fragment implements StatusUpdate {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,18 +35,14 @@ public class Luces extends Fragment implements StatusUpdate{
     public static MainActivity mainActivity;
 
     private OnFragmentInteractionListener mListener;
-    private TextView textView6;
     private TextView textView7;
-    private TextView statusriego1on;
+    private TextView horaluzon;
     private Button btnOn;
     private TextView textView13;
-    private TextView statusriego2on;
+    private TextView horaluzoff;
     private Button btnOff;
-    private TextView textView10;
-    private Button button3;
-    private Button button4;
     private TextView textView8;
-    private TextView statusriego;
+    private TextView statusluz;
 
     public Luces() {
         // Required empty public constructor
@@ -84,20 +80,14 @@ public class Luces extends Fragment implements StatusUpdate{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_luces, container, false);
-        this.statusriego = (TextView) rootView.findViewById(R.id.status_riego);
+        this.statusluz = (TextView) rootView.findViewById(R.id.status_luz);
         this.textView8 = (TextView) rootView.findViewById(R.id.textView8);
-        this.button4 = (Button) rootView.findViewById(R.id.button4);
-        this.button3 = (Button) rootView.findViewById(R.id.button3);
-        this.textView10 = (TextView) rootView.findViewById(R.id.textView10);
         this.btnOff = (Button) rootView.findViewById(R.id.btnOff);
-        this.statusriego2on = (TextView) rootView.findViewById(R.id.status_riego_2_on);
+        this.horaluzoff = (TextView) rootView.findViewById(R.id.hora_luz_off);
         this.textView13 = (TextView) rootView.findViewById(R.id.textView13);
         this.btnOn = (Button) rootView.findViewById(R.id.btnOn);
-        this.statusriego1on = (TextView) rootView.findViewById(R.id.status_riego_1_on);
+        this.horaluzon = (TextView) rootView.findViewById(R.id.hora_luz_on);
         this.textView7 = (TextView) rootView.findViewById(R.id.textView7);
-        this.textView6 = (TextView) rootView.findViewById(R.id.textView6);
-
-
 
         if (mainActivity == null) {
             this.mainActivity = MainActivity.mainActivity;
@@ -138,7 +128,18 @@ public class Luces extends Fragment implements StatusUpdate{
 
     @Override
     public void Update() {
+        this.horaluzon.setText(this.mainActivity.status.hora_luces_on.toString(MainActivity.formatterTime));
+        this.horaluzoff.setText(this.mainActivity.status.hora_luces_off.toString(MainActivity.formatterTime));
 
+        String s;
+
+        if (this.mainActivity.status.Sluz) {
+            s = mainActivity.getString(R.string.luces_prendidas);
+        } else {
+            s = mainActivity.getString(R.string.luces_apagadas);
+        }
+
+        this.statusluz.setText(s);
     }
 
     /**
