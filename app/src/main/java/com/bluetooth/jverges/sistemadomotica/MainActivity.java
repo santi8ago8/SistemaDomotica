@@ -206,9 +206,20 @@ public class MainActivity extends AppCompatActivity
                         @TargetApi(Build.VERSION_CODES.KITKAT)
                         public void run() {
                             Log.d("bt domotica", "Init thread");
-                            int bytes; // bytes returned from read()
+                            int bytes;
                             int availableBytes = 0;
                             // Keep listening to the InputStream until an exception occurs
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
+                                        Log.d("tag", "run on ui thread");
+                                        MainActivity.mainActivity.status.parseStatus(MainActivity.mainActivity.toNotify.get(i));
+                                        MainActivity.mainActivity.toNotify.remove(i--);
+                                    }
+                                }
+                            });
+
                             boolean needRun = true;
                             while (needRun) {
                                 try {
@@ -227,7 +238,6 @@ public class MainActivity extends AppCompatActivity
                                             s.append(c.toString());
 
                                         }
-
 
                                         Log.d("buffer", s.toString().replace("\r\n", ""));//, Character.getName(buffer[0])));
                                         if (bytes > 0) {
@@ -252,22 +262,8 @@ public class MainActivity extends AppCompatActivity
                                     e.printStackTrace();
                                     break;
                                 }
-
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        synchronized (MainActivity.mainActivity.toNotify) {
-                                            for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
-                                                Log.d("tag", "run on ui thread");
-                                                MainActivity.mainActivity.status.parseStatus(MainActivity.mainActivity.toNotify.get(i));
-                                                MainActivity.mainActivity.toNotify.remove(i--);
-
-                                            }
-                                        }
-                                    }
-                                });
                             }
+
                         }
                     }).start();
                 }
