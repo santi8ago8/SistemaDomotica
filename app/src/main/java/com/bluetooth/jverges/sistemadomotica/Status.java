@@ -26,7 +26,16 @@ public class Status {
     public boolean Sriego;
     public boolean Sluz;
 
-    public String alarma;
+    public String alarma="";
+
+    /**
+     * eventos:
+     *  E-L1 luz activada.
+     *  E-L0 luz desactivada.
+     *  R-1 riego activado
+     *  R-0 riego desactivado
+     *  P panico alarma
+     */
 
     public Status() {
         map = new HashMap<>(9);
@@ -42,13 +51,19 @@ public class Status {
         this.hasStatus = true;
         String[] lines = status.split("\n");
         for (String l : lines) {
-            this.parseLine(l);
+            try {
+                this.parseLine(l);
+            }
+            catch (Exception ex){
+                ex.printStackTrace();;
+            }
         }
         this.notificar();
         return this;
     }
 
     private void notificar() {
+        Log.d("tag","notificaciones len: "+notificaciones.size());
         for (StatusUpdate s : notificaciones) {
             Log.d("tag", "notificados");
             if (s != null)

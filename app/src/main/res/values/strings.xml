@@ -26,6 +26,6 @@
     <string name="regando">Regando</string>
     <string name="activada">Activada</string>
     <string name="desactivada">Desactivada</string>
-    <string name="luces_prendidas">Luces prendidas</string>
+    <string name="luces_prendidas">Luces Evncendidas</string>
     <string name="luces_apagadas">Luces Apagadas</string>
 </resources>

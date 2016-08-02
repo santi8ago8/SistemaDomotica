@@ -8,6 +8,9 @@ import android.bluetooth.BluetoothSocket;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.ParcelUuid;
 import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     public static MainActivity mainActivity = null;
     public static ArrayList<String> toNotify = new ArrayList<>(9);
     public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("k:m");
+    public static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +94,26 @@ public class MainActivity extends AppCompatActivity
         ft.replace(R.id.content_main, frag);
         ft.commit();
         //status.parseStatus("T-2016:5:30:12:32:15");
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+
+                for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
+                    Log.d("tag", "run on ui thread");
+                    MainActivity.mainActivity.status.parseStatus(MainActivity.mainActivity.toNotify.get(i));
+                    MainActivity.mainActivity.toNotify.remove(i--);
+                }
+            }
+        };
         try {
             init();
             onClick3(null);
+            onClick2(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     @Override
@@ -217,56 +235,69 @@ public class MainActivity extends AppCompatActivity
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
-                                        Log.d("tag", "run on ui thread");
-                                        MainActivity.mainActivity.status.parseStatus(MainActivity.mainActivity.toNotify.get(i));
-                                        MainActivity.mainActivity.toNotify.remove(i--);
-                                    }
+
                                 }
                             });
 
                             boolean needRun = true;
                             while (needRun) {
-                                try {
-                                    availableBytes = inStream.available();
-                                    if (availableBytes > 0) {
-                                        byte[] buffer = new byte[availableBytes];  // buffer store for the stream
-                                        // Read from the InputStream
+                                if (inStream != null)
+                                    try {
+                                        availableBytes = inStream.available();
+                                        if (availableBytes > 0) {
+                                            byte[] buffer = new byte[availableBytes];  // buffer store for the stream
+                                            // Read from the InputStream
 
-                                        bytes = inStream.read(buffer, 0, availableBytes);
+                                            bytes = inStream.read(buffer, 0, availableBytes);
 
-                                        StringBuilder s = new StringBuilder();
-                                        Log.d("tag", Integer.toString(bytes));
+                                            StringBuilder s = new StringBuilder();
 
-                                        for (int i = 0; i < buffer.length; i++) {
-                                            Character c = (char) buffer[i];
-                                            s.append(c.toString());
+                                            for (int i = 0; i < buffer.length; i++) {
+                                                if (buffer[i] > 0) {
+                                                    Character c = (char) buffer[i];
+                                                    s.append(c.toString());
+                                                }
+                                            }
 
-                                        }
+                                            Log.d("buffer", s.toString().replace("\r\n", ""));//, Character.getName(buffer[0])));
 
-                                        Log.d("buffer", s.toString().replace("\r\n", ""));//, Character.getName(buffer[0])));
-                                        if (bytes > 0) {
-                                            readBuffer += new String(buffer);
+                                            readBuffer += s.toString();
+                                            Log.d("read buffer", readBuffer);
 
                                             String[] lines = readBuffer.split("\r\n");
+
 
                                             readBuffer = "";
 
                                             for (int i = 0; i < lines.length; i++) {
                                                 String l = lines[i];
-                                                if (l.startsWith("T") && l.endsWith(";")) {
+                                                ArrayList<String> begins = new ArrayList<String>(4);
+                                                begins.add("T");
+                                                begins.add("A");
+                                                begins.add("E");
+                                                begins.add("R");
+                                                begins.add("S");
+
+                                                //agregar P, y E para manejar eventos.
+
+                                                if (l.length() > 0 && begins.contains(l.substring(0, 1)) && l.endsWith(";")) {
                                                     toNotify.add(l);
                                                 } else {
-                                                    readBuffer += l;
+                                                    if (l.endsWith(";"))
+                                                        readBuffer += l + "\r\n";
+                                                    else {
+                                                        readBuffer += l;
+                                                    }
                                                 }
                                             }
+                                            handler.sendEmptyMessage(1);
+
                                         }
+                                    } catch (IOException e) {
+                                        Log.d("Error reading", e.getMessage());
+                                        e.printStackTrace();
+                                        break;
                                     }
-                                } catch (IOException e) {
-                                    Log.d("Error reading", e.getMessage());
-                                    e.printStackTrace();
-                                    break;
-                                }
                             }
 
                         }
@@ -296,7 +327,7 @@ public class MainActivity extends AppCompatActivity
     public void onClick2(View v) {
 
         Log.d("tag", "enviar");
-        write("C-22:14;");
+        write("S");
 
     }
 

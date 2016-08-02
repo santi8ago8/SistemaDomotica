@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.TextViewCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,6 +123,7 @@ public class StatusFragment extends Fragment implements StatusUpdate {
     @Override
     public void Update() {
 
+        Log.d("tag","update interfaz");
         this.hora.setText(mainActivity.status.hora.toString());
         this.luces_hora_on.setText(mainActivity.status.hora_luces_on.toString(MainActivity.formatterTime));
         this.luces_hora_off.setText(mainActivity.status.hora_luces_off.toString(MainActivity.formatterTime));
@@ -129,7 +131,7 @@ public class StatusFragment extends Fragment implements StatusUpdate {
         this.riego_2_on.setText(mainActivity.status.hora_riego_2_on.toString(MainActivity.formatterTime));
 
         String s = "";
-        switch (mainActivity.status.alarma) {
+        switch (MainActivity.mainActivity.status.alarma) {
             case "a":
                 s = mainActivity.getString(R.string.activada);
                 break;

@@ -82,6 +82,8 @@ public class Alarma extends Fragment implements StatusUpdate {
         this.btnOffAlarma = (Button) rootView.findViewById(R.id.btnOffAlarma);
         this.btnOnAlarma = (Button) rootView.findViewById(R.id.btnOnAlarma);
 
+        MainActivity.mainActivity.status.addToNotify(this);
+        this.mainActivity = MainActivity.mainActivity;
 
         return rootView;
 
@@ -115,15 +117,15 @@ public class Alarma extends Fragment implements StatusUpdate {
     public void Update() {
 
         String s = "";
-        switch (this.mainActivity.status.alarma) {
+        switch (MainActivity.mainActivity.status.alarma) {
             case "a":
-                s = mainActivity.getString(R.string.activada);
+                s = MainActivity.mainActivity.getString(R.string.activada);
                 break;
             case "d":
-                s = mainActivity.getString(R.string.desactivada);
+                s = MainActivity.mainActivity.getString(R.string.desactivada);
                 break;
             case "p":
-                s = mainActivity.getString(R.string.panico);
+                s = MainActivity.mainActivity.getString(R.string.panico);
                 break;
         }
 
