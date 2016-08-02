@@ -2,9 +2,13 @@ package com.bluetooth.jverges.sistemadomotica;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,11 +16,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
+import android.provider.Settings;
+import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -55,8 +62,9 @@ public class MainActivity extends AppCompatActivity
     private String readBuffer = "";
     public static MainActivity mainActivity = null;
     public static ArrayList<String> toNotify = new ArrayList<>(9);
-    public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("k:m");
+    public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("HH:mm 'Hs'");
     public static Handler handler;
+    private ProgressDialog dialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,14 +113,9 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
-        try {
-            init();
-            onClick3(null);
-            onClick2(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+
+        initWithThread();
 
     }
 
@@ -124,6 +127,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+        Log.d("tag", "back bt");
     }
 
     @Override
@@ -141,9 +145,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -193,6 +197,19 @@ public class MainActivity extends AppCompatActivity
     private InputStream inStream;
 
     private void init() throws IOException {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (dialog == null)
+                    dialog = ProgressDialog.show(MainActivity.this, "",
+                            getString(R.string.int_conn_disp), true);
+                else
+                    dialog.show();
+            }
+        });
+
         BluetoothAdapter blueAdapter = BluetoothAdapter.getDefaultAdapter();
         if (blueAdapter != null) {
             if (blueAdapter.isEnabled()) {
@@ -204,7 +221,7 @@ public class MainActivity extends AppCompatActivity
                 if (bondedDevices.size() > 0) {
 
                     Object[] devices = (Object[]) bondedDevices.toArray();
-                    int pos = 0;
+                    int pos = -1;
                     for (int i = 0; i < devices.length; i++) {
                         BluetoothDevice bd = (BluetoothDevice) devices[i];
                         Log.d("tag", bd.getName());
@@ -214,15 +231,36 @@ public class MainActivity extends AppCompatActivity
                         }
 
                     }
+                    if (pos == -1) {
+                        showDeviceNotConected();
+                    }
                     BluetoothDevice device = (BluetoothDevice) devices[pos];
+                    Log.d("tag", "JSJS encontrado");
                     ParcelUuid[] uuids = device.getUuids();
                     BluetoothSocket socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
                     try {
                         socket.connect();
                         inStream = socket.getInputStream();
                         outputStream = socket.getOutputStream();
+                        Log.d("tag", "Socket conectado");
+
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog != null) {
+                                    dialog.hide();
+                                }
+                                onClick3(null);
+                                write("S");
+
+                            }
+                        });
+
                     } catch (IOException e) {
+                        showDeviceOutOfRange();
                         Log.d("tag", "Esta vinculado pero no se puede abrir el socket al dispositivo, comprobar el rango");
+
                     }
 
                     new Thread(new Runnable() {
@@ -231,13 +269,6 @@ public class MainActivity extends AppCompatActivity
                             Log.d("bt domotica", "Init thread");
                             int bytes;
                             int availableBytes = 0;
-                            // Keep listening to the InputStream until an exception occurs
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                }
-                            });
 
                             boolean needRun = true;
                             while (needRun) {
@@ -304,11 +335,83 @@ public class MainActivity extends AppCompatActivity
                     }).start();
                 } else {
                     Log.e("tag", "dispositivo no vinculado");
+                    showDeviceNotConected();
                 }
             } else {
                 Log.e("error", "Bluetooth is disabled, open dialog and settings.");
+                btDissabled();
             }
         }
+    }
+
+    private void showDeviceOutOfRange() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("tag", "device out of range");
+                if (dialog != null)
+                    dialog.hide();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.mainActivity);
+                builder.setMessage(R.string.mgs_not_connection)
+                        .setPositiveButton(R.string.reintentar, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Log.d("tag", "positive");
+                                initWithThread();
+                            }
+                        })
+                        .setNegativeButton(R.string.salir, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                                Log.d("tag", "salir");
+                                System.exit(0);
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                Log.d("tag", "back dialogo");
+                                System.exit(0);
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+    }
+
+
+    private void showDeviceNotConected() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("tag", "device not paired");
+                if (dialog != null)
+                    dialog.hide();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.mainActivity);
+                builder.setMessage(R.string.disp_no_vinculado)
+                        .setPositiveButton(R.string.vincular, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Log.d("tag", "positive");
+                                Intent settingsIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+                                startActivityForResult(settingsIntent, 1);
+                            }
+                        })
+                        .setNegativeButton(R.string.salir, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                                Log.d("tag", "salir");
+                                System.exit(0);
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                Log.d("tag", "back dialogo");
+                                System.exit(0);
+                            }
+                        });
+                builder.create().show();
+            }
+        });
     }
 
     public void write(String s) {
@@ -415,9 +518,72 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            initWithThread();
+
+        }
+
+        Log.d("tag", "finish bt activate");
+    }
+
+    private void btDissabled() {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (dialog != null)
+                    dialog.hide();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.mainActivity);
+                builder.setMessage(R.string.msg_activar_bt)
+                        .setPositiveButton(R.string.activar, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Log.d("tag", "positive");
+                                Intent settingsIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+                                settingsIntent.putExtra("bt", "asdas");
+                                startActivityForResult(settingsIntent, 1);
+                                Log.d("tag", "bluetoothhhh");
+                            }
+                        })
+                        .setNegativeButton(R.string.salir, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                                Log.d("tag", "salir");
+                                System.exit(0);
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                Log.d("tag", "back dialogo");
+                                System.exit(0);
+                            }
+                        });
+                builder.create().show();
+            }
+        });
+
+
+    }
+
+    private void initWithThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    init();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
 
     }
 }

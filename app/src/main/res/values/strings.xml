@@ -26,6 +26,13 @@
     <string name="regando">Regando</string>
     <string name="activada">Activada</string>
     <string name="desactivada">Desactivada</string>
-    <string name="luces_prendidas">Luces Evncendidas</string>
+    <string name="luces_prendidas">Luces Encendidas</string>
     <string name="luces_apagadas">Luces Apagadas</string>
+    <string name="msg_activar_bt">El bluetooth esta desactivado, debe activarlo</string>
+    <string name="salir">Salir</string>
+    <string name="vincular">Vincular</string>
+    <string name="disp_no_vinculado">El dispositivo no esta vinculado</string>
+    <string name="mgs_not_connection">No se puede conectar con el dispositivo, compruebe su rango</string>
+    <string name="reintentar">Reintentar</string>
+    <string name="int_conn_disp">Intentando conectar con el dispositivo...</string>
 </resources>
