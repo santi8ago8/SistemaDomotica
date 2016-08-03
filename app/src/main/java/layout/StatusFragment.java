@@ -91,7 +91,7 @@ public class StatusFragment extends Fragment implements StatusUpdate {
         if (null == mainActivity) {
             mainActivity = MainActivity.mainActivity;
         }
-        mainActivity.status.addToNotify(this);
+         mainActivity.status.addToNotify(this);
 
         return view;
     }

@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("HH:mm 'Hs'");
     public static Handler handler;
     private ProgressDialog dialog = null;
+    private static BluetoothSocket socket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         this.status = new Status();
 
 
@@ -226,7 +228,7 @@ public class MainActivity extends AppCompatActivity
                         BluetoothDevice bd = (BluetoothDevice) devices[i];
                         Log.d("tag", bd.getName());
                         Log.d("tag", bd.getAddress());
-                        if (bd.getAddress().equals("20:15:06:03:15:58")) {
+                        if (bd.getAddress().equals("A4:D1:8C:5E:A9:E9")) {  //usar esta:20:15:06:03:15:58
                             pos = i;
                         }
 
@@ -237,13 +239,22 @@ public class MainActivity extends AppCompatActivity
                     BluetoothDevice device = (BluetoothDevice) devices[pos];
                     Log.d("tag", "JSJS encontrado");
                     ParcelUuid[] uuids = device.getUuids();
-                    BluetoothSocket socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+
                     try {
-                        socket.connect();
+
+                        Log.d("tag", "Socket:");
+                        Log.d("tag", socket == null ? "null" : socket.toString());
+                        if (socket==null) {
+                            socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+
+                            socket.connect();
+                        }
                         inStream = socket.getInputStream();
                         outputStream = socket.getOutputStream();
                         Log.d("tag", "Socket conectado");
 
+                        onClick3(null);
+                        write("S");
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -251,13 +262,13 @@ public class MainActivity extends AppCompatActivity
                                 if (dialog != null) {
                                     dialog.hide();
                                 }
-                                onClick3(null);
-                                write("S");
+
 
                             }
                         });
 
                     } catch (IOException e) {
+                        e.printStackTrace();
                         showDeviceOutOfRange();
                         Log.d("tag", "Esta vinculado pero no se puede abrir el socket al dispositivo, comprobar el rango");
 
