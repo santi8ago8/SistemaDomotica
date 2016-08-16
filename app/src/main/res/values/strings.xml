@@ -35,4 +35,8 @@
     <string name="mgs_not_connection">No se puede conectar con el dispositivo, compruebe su rango</string>
     <string name="reintentar">Reintentar</string>
     <string name="int_conn_disp">Intentando conectar con el dispositivo...</string>
+    <string name="desactivado">Desactivado</string>
+    <string name="activado">Activado</string>
+    <string name="alarma_panico">Alarma en estado pánico</string>
+    <string name="espera_teclado">Esperando que se termine de usar el teclado...</string>
 </resources>

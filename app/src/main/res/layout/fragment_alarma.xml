@@ -79,14 +79,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Estado:"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="4dp"
+                android:textColor="@color/abc_primary_text_disable_only_material_dark" />
 
             <TextView
                 android:id="@+id/status_alarma"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" "
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/abc_primary_text_disable_only_material_dark" />
         </LinearLayout>
 
     </LinearLayout>

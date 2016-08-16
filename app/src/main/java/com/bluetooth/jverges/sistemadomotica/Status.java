@@ -26,15 +26,15 @@ public class Status {
     public boolean Sriego;
     public boolean Sluz;
 
-    public String alarma="";
+    public String alarma = "";
 
     /**
      * eventos:
-     *  E-L1 luz activada.
-     *  E-L0 luz desactivada.
-     *  R-1 riego activado
-     *  R-0 riego desactivado
-     *  P panico alarma
+     * E-L1 luz activada.
+     * E-L0 luz desactivada.
+     * R-1 riego activado
+     * R-0 riego desactivado
+     * P panico alarma
      */
 
     public Status() {
@@ -53,9 +53,8 @@ public class Status {
         for (String l : lines) {
             try {
                 this.parseLine(l);
-            }
-            catch (Exception ex){
-                ex.printStackTrace();;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         this.notificar();
@@ -63,7 +62,7 @@ public class Status {
     }
 
     private void notificar() {
-        Log.d("tag","notificaciones len: "+notificaciones.size());
+        Log.d("tag", "notificaciones len: " + notificaciones.size());
         for (StatusUpdate s : notificaciones) {
             Log.d("tag", "notificados");
             if (s != null)
@@ -82,14 +81,15 @@ public class Status {
             //aca tiene que venir el comando a setear
             String key = line[0];
             //aca tiene que venir la hora y fecha
-            String[] data = line[1].split(":");
-            Log.d("tag", line[1]);
-            Log.d("tag", line[0]);
+            String[] data = new String[2];
+            if (line.length > 1) {
+                data = line[1].split(":");
+            }
             int[] ints = new int[9];
 
 
             if (key.startsWith("A")) {
-                this.alarma = line[1];
+                this.alarma = line.length > 1 ? line[1] : "d";
             } else if (key.startsWith("S")) {
                 try {
                     this.getClass().getField(key).setBoolean(this, line[1].equals("1"));
@@ -117,6 +117,14 @@ public class Status {
                     tiempo.setHourOfDay(ints[0]);
                     tiempo.setMinuteOfHour(ints[1]);
                 }
+            } else if (key.startsWith("E")) { //evento de luz
+                MainActivity.mainActivity.eventoLuz(line[1].equals("L1"));
+            } else if (key.startsWith("R")) {
+                MainActivity.mainActivity.eventoRiego(line[1].equals("1"));
+            } else if (key.startsWith("F")) {
+                MainActivity.mainActivity.eventoAlarma();
+            } else if (key.startsWith("M")) {
+                MainActivity.mainActivity.bloquearPantalla(line[1].equals("1"));
             }
         }
 

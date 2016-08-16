@@ -25,14 +25,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Estado"
+                android:text="Estado del sistema"
                 android:id="@+id/textViewStatusTitle"
-                android:singleLine="false" />
+                android:singleLine="false"
+                android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                android:layout_marginRight="4dp" />
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,13 +43,16 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/hora_del_dispositivo"
                     android:id="@+id/textView3"
-                    android:layout_marginRight="4dp" />
+                    android:layout_marginRight="4dp"
+                    android:textColor="@color/abc_primary_text_disable_only_material_dark" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/status_hora" />
+                    android:id="@+id/status_hora"
+                    android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                    android:layout_marginRight="4dp" />
 
             </LinearLayout>
 
@@ -62,7 +68,9 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Luces"
                     android:id="@+id/textView2"
-                    android:singleLine="false" />
+                    android:singleLine="false"
+                    android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                    android:layout_marginRight="4dp" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -74,13 +82,17 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Hora de encendido: "
-                        android:id="@+id/textView4" />
+                        android:id="@+id/textView4"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/status_luces_hora_on" />
+                        android:id="@+id/status_luces_hora_on"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -93,13 +105,17 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Hora de apagado: "
-                        android:id="@+id/textView5" />
+                        android:id="@+id/textView5"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/status_luces_hora_off" />
+                        android:id="@+id/status_luces_hora_off"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -116,14 +132,18 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Riego"
                     android:id="@+id/textView6"
-                    android:singleLine="false" />
+                    android:singleLine="false"
+                    android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                    android:layout_marginRight="4dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Fase 1"
-                    android:id="@+id/textView11" />
+                    android:text="Riego 1"
+                    android:id="@+id/textView11"
+                    android:textColor="@color/bright_foreground_disabled_material_dark"
+                    android:layout_marginRight="4dp" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -135,21 +155,27 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Hora de encendido: "
-                        android:id="@+id/textView7" />
+                        android:id="@+id/textView7"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/status_riego_1_on" />
+                        android:id="@+id/status_riego_1_on"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Fase 2"
-                    android:id="@+id/textView12" />
+                    android:text="Riego 2"
+                    android:id="@+id/textView12"
+                    android:textColor="@color/bright_foreground_disabled_material_dark"
+                    android:layout_marginRight="4dp" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -161,13 +187,17 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Hora de encendido: "
-                        android:id="@+id/textView13" />
+                        android:id="@+id/textView13"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/status_riego_2_on" />
+                        android:id="@+id/status_riego_2_on"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -184,7 +214,9 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Alarma"
                     android:id="@+id/textView9"
-                    android:singleLine="false" />
+                    android:singleLine="false"
+                    android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                    android:layout_marginRight="4dp" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -196,13 +228,17 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Estado: "
-                        android:id="@+id/textView21" />
+                        android:id="@+id/textView21"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/txtEstadoAlarma" />
+                        android:id="@+id/txtEstadoAlarma"
+                        android:textColor="@color/abc_primary_text_disable_only_material_dark"
+                        android:layout_marginRight="4dp" />
                 </LinearLayout>
             </LinearLayout>
 

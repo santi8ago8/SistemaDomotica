@@ -21,7 +21,8 @@
             android:id="@+id/textView14"
             android:gravity="center_vertical|center_horizontal"
             android:layout_margin="4dp"
-            android:textSize="40dp" />
+            android:textSize="40dp"
+            android:textColor="@color/abc_primary_text_disable_only_material_dark" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,7 +32,8 @@
             android:id="@+id/textView17"
             android:gravity="center_vertical|center_horizontal"
             android:layout_margin="4dp"
-            android:textSize="30dp" />
+            android:textSize="30dp"
+            android:textColor="@color/abc_primary_text_disable_only_material_dark" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,7 +42,8 @@
             android:text="Juan Ignacio Vergés"
             android:id="@+id/textView16"
             android:gravity="center_vertical|center_horizontal"
-            android:layout_margin="4dp" />
+            android:layout_margin="4dp"
+            android:textColor="@color/abc_primary_text_disable_only_material_dark" />
 
         <SurfaceView
             android:layout_width="165dp"

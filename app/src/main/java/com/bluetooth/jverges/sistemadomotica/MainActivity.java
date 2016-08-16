@@ -2,13 +2,19 @@ package com.bluetooth.jverges.sistemadomotica;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +29,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity
     private String readBuffer = "";
     public static MainActivity mainActivity = null;
     public static ArrayList<String> toNotify = new ArrayList<>(9);
-    public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("HH:mm 'Hs'");
+    public static DateTimeFormatter formatterTime = DateTimeFormat.forPattern("HH:mm 'hs.'");
     public static Handler handler;
     private ProgressDialog dialog = null;
     private static BluetoothSocket socket = null;
@@ -110,15 +117,13 @@ public class MainActivity extends AppCompatActivity
 
                 for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
                     Log.d("tag", "run on ui thread");
-                    MainActivity.mainActivity.status.parseStatus(MainActivity.mainActivity.toNotify.get(i));
+                    String s = MainActivity.mainActivity.toNotify.get(i);
                     MainActivity.mainActivity.toNotify.remove(i--);
+                    MainActivity.mainActivity.status.parseStatus(s);
                 }
             }
         };
-
-
         initWithThread();
-
     }
 
     @Override
@@ -130,6 +135,21 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
         Log.d("tag", "back bt");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("tag", "on pause");
+        if (dialog != null)
+            dialog.onDetachedFromWindow();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.write("S");
     }
 
     @Override
@@ -228,126 +248,131 @@ public class MainActivity extends AppCompatActivity
                         BluetoothDevice bd = (BluetoothDevice) devices[i];
                         Log.d("tag", bd.getName());
                         Log.d("tag", bd.getAddress());
-                        if (bd.getAddress().equals("A4:D1:8C:5E:A9:E9")) {  //usar esta:20:15:06:03:15:58
+                        if (bd.getAddress().equals("20:15:06:03:15:58")) {  //usar esta:20:15:06:03:15:58
                             pos = i;
                         }
 
                     }
                     if (pos == -1) {
                         showDeviceNotConected();
-                    }
-                    BluetoothDevice device = (BluetoothDevice) devices[pos];
-                    Log.d("tag", "JSJS encontrado");
-                    ParcelUuid[] uuids = device.getUuids();
+                    } else {
+                        BluetoothDevice device = (BluetoothDevice) devices[pos];
+                        Log.d("tag", "JSJS encontrado");
+                        ParcelUuid[] uuids = device.getUuids();
 
-                    try {
+                        try {
 
-                        Log.d("tag", "Socket:");
-                        Log.d("tag", socket == null ? "null" : socket.toString());
-                        if (socket==null) {
-                            socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+                            Log.d("tag", "Socket:");
+                            Log.d("tag", socket == null ? "null" : socket.toString());
+                            if (socket == null) {
+                                socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
-                            socket.connect();
-                        }
-                        inStream = socket.getInputStream();
-                        outputStream = socket.getOutputStream();
-                        Log.d("tag", "Socket conectado");
-
-                        onClick3(null);
-                        write("S");
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (dialog != null) {
-                                    dialog.hide();
-                                }
-
-
+                                socket.connect();
                             }
-                        });
+                            inStream = socket.getInputStream();
+                            outputStream = socket.getOutputStream();
+                            Log.d("tag", "Socket conectado");
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        showDeviceOutOfRange();
-                        Log.d("tag", "Esta vinculado pero no se puede abrir el socket al dispositivo, comprobar el rango");
+                            onClick3(null);
+                            write("S");
 
-                    }
-
-                    new Thread(new Runnable() {
-                        @TargetApi(Build.VERSION_CODES.KITKAT)
-                        public void run() {
-                            Log.d("bt domotica", "Init thread");
-                            int bytes;
-                            int availableBytes = 0;
-
-                            boolean needRun = true;
-                            while (needRun) {
-                                if (inStream != null)
-                                    try {
-                                        availableBytes = inStream.available();
-                                        if (availableBytes > 0) {
-                                            byte[] buffer = new byte[availableBytes];  // buffer store for the stream
-                                            // Read from the InputStream
-
-                                            bytes = inStream.read(buffer, 0, availableBytes);
-
-                                            StringBuilder s = new StringBuilder();
-
-                                            for (int i = 0; i < buffer.length; i++) {
-                                                if (buffer[i] > 0) {
-                                                    Character c = (char) buffer[i];
-                                                    s.append(c.toString());
-                                                }
-                                            }
-
-                                            Log.d("buffer", s.toString().replace("\r\n", ""));//, Character.getName(buffer[0])));
-
-                                            readBuffer += s.toString();
-                                            Log.d("read buffer", readBuffer);
-
-                                            String[] lines = readBuffer.split("\r\n");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (dialog != null) {
+                                        dialog.hide();
+                                    }
 
 
-                                            readBuffer = "";
+                                }
+                            });
 
-                                            for (int i = 0; i < lines.length; i++) {
-                                                String l = lines[i];
-                                                ArrayList<String> begins = new ArrayList<String>(4);
-                                                begins.add("T");
-                                                begins.add("A");
-                                                begins.add("E");
-                                                begins.add("R");
-                                                begins.add("S");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            showDeviceOutOfRange();
+                            socket = null;
+                            Log.d("tag", "Esta vinculado pero no se puede abrir el socket al dispositivo, comprobar el rango");
 
-                                                //agregar P, y E para manejar eventos.
+                        }
 
-                                                if (l.length() > 0 && begins.contains(l.substring(0, 1)) && l.endsWith(";")) {
-                                                    toNotify.add(l);
-                                                } else {
-                                                    if (l.endsWith(";"))
-                                                        readBuffer += l + "\r\n";
-                                                    else {
-                                                        readBuffer += l;
+                        new Thread(new Runnable() {
+                            @TargetApi(Build.VERSION_CODES.KITKAT)
+                            public void run() {
+                                Log.d("bt domotica", "Init thread");
+                                int bytes;
+                                int availableBytes = 0;
+
+                                boolean needRun = true;
+                                while (needRun) {
+                                    if (inStream != null)
+                                        try {
+                                            availableBytes = inStream.available();
+                                            if (availableBytes > 0) {
+                                                byte[] buffer = new byte[availableBytes];  // buffer store for the stream
+                                                // Read from the InputStream
+
+                                                bytes = inStream.read(buffer, 0, availableBytes);
+
+                                                StringBuilder s = new StringBuilder();
+
+                                                for (int i = 0; i < buffer.length; i++) {
+                                                    if (buffer[i] > 0) {
+                                                        Character c = (char) buffer[i];
+                                                        s.append(c.toString());
                                                     }
                                                 }
+
+                                                Log.d("buffer", s.toString().replace("\r\n", ""));//, Character.getName(buffer[0])));
+
+                                                readBuffer += s.toString();
+                                                Log.d("read buffer", readBuffer);
+
+                                                String[] lines = readBuffer.split("\r\n");
+
+
+                                                readBuffer = "";
+
+                                                for (int i = 0; i < lines.length; i++) {
+                                                    String l = lines[i];
+                                                    ArrayList<String> begins = new ArrayList<>(7);
+                                                    begins.add("T");
+                                                    begins.add("A");
+                                                    begins.add("E");
+                                                    begins.add("R");
+                                                    begins.add("S");
+                                                    begins.add("F");
+                                                    begins.add("M");
+
+                                                    //agregar P, y E para manejar eventos.
+
+                                                    if (l.length() > 0 && begins.contains(l.substring(0, 1)) && l.endsWith(";")) {
+                                                        toNotify.add(l);
+                                                    } else {
+                                                        if (l.endsWith(";"))
+                                                            readBuffer += l + "\r\n";
+                                                        else {
+                                                            readBuffer += l;
+                                                        }
+                                                    }
+                                                }
+                                                handler.sendEmptyMessage(1);
+
                                             }
-                                            handler.sendEmptyMessage(1);
-
+                                        } catch (IOException e) {
+                                            Log.d("Error reading", e.getMessage());
+                                            e.printStackTrace();
+                                            break;
                                         }
-                                    } catch (IOException e) {
-                                        Log.d("Error reading", e.getMessage());
-                                        e.printStackTrace();
-                                        break;
-                                    }
-                            }
+                                }
 
-                        }
-                    }).start();
+                            }
+                        }).start();
+                    }
                 } else {
                     Log.e("tag", "dispositivo no vinculado");
                     showDeviceNotConected();
                 }
+
             } else {
                 Log.e("error", "Bluetooth is disabled, open dialog and settings.");
                 btDissabled();
@@ -595,6 +620,101 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+
+    }
+
+    public void eventoLuz(final boolean prendida) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int i = 1;
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(R.drawable.ic_launcher)
+                                .setContentTitle(getString(R.string.app_name))
+                                .setContentText(getString(prendida ? R.string.luces_prendidas : R.string.luces_apagadas))
+                                .setVibrate(new long[]{1000, 1000})
+                                .setLights(Color.CYAN, 1000, 3000)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setAutoCancel(true);
+
+                mBuilder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0,
+                        new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(i, mBuilder.build());
+
+            }
+        });
+    }
+
+    public void eventoRiego(final boolean prendido) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int i = 2;
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(R.drawable.ic_launcher)
+                                .setContentTitle(getString(R.string.app_name))
+                                .setContentText(getString(prendido ? R.string.regando : R.string.no_regando))
+                                .setVibrate(new long[]{1000, 1000})
+                                .setLights(Color.CYAN, 1000, 3000)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setAutoCancel(true);
+
+                mBuilder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0,
+                        new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(i, mBuilder.build());
+
+            }
+        });
+    }
+
+    public void eventoAlarma() {
+        Log.d("tag", "evento alarma");
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int i = 3;
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(R.drawable.ic_launcher)
+                                .setContentTitle(getString(R.string.app_name))
+                                .setContentText(getString(R.string.alarma_panico))
+                                .setVibrate(new long[]{1000, 1000})
+                                .setLights(Color.CYAN, 1000, 3000)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setAutoCancel(true);
+
+                mBuilder.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0,
+                        new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                // Builds the notification and issues it.
+                mNotifyMgr.notify(i, mBuilder.build());
+            }
+        });
+    }
+
+    ProgressDialog dialogBloq = null;
+
+    public void bloquearPantalla(boolean bloquear) {
+        Log.d("tag", "bloqueo del teclado: " + Boolean.toString(bloquear));
+        if (bloquear && dialogBloq == null) {
+            Log.d("tag","bloquear pantalla");
+            dialogBloq = ProgressDialog.show(MainActivity.this, "",
+                    getString(R.string.espera_teclado), true);
+            dialogBloq.show();
+        }
+        if (!bloquear && dialogBloq != null) {
+            dialogBloq.hide();
+            dialogBloq = null;
+        }
 
     }
 }
