@@ -24,6 +24,7 @@ public class Status {
     public MutableDateTime hora_riego_1_on;
     public MutableDateTime hora_riego_2_on;
     public boolean Sriego;
+    public boolean riegoActivado;
     public boolean Sluz;
 
     public String alarma = "";
@@ -61,7 +62,7 @@ public class Status {
         return this;
     }
 
-    private void notificar() {
+    public void notificar() {
         Log.d("tag", "notificaciones len: " + notificaciones.size());
         for (StatusUpdate s : notificaciones) {
             Log.d("tag", "notificados");
@@ -125,6 +126,8 @@ public class Status {
                 MainActivity.mainActivity.eventoAlarma();
             } else if (key.startsWith("M")) {
                 MainActivity.mainActivity.bloquearPantalla(line[1].equals("1"));
+            } else if (key.startsWith("B") && line.length > 1) {
+                this.riegoActivado = line[1].equals("a");
             }
         }
 

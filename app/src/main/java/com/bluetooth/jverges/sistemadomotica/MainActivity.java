@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity
                                                     begins.add("S");
                                                     begins.add("F");
                                                     begins.add("M");
+                                                    begins.add("B");
 
                                                     //agregar P, y E para manejar eventos.
 
@@ -505,11 +506,15 @@ public class MainActivity extends AppCompatActivity
     public void onClickDesactivarRiego(View v) {
         Log.d("tag", "Desactivar riego");
         write("F");
+        this.status.riegoActivado = false;
+        this.status.notificar();
     }
 
     public void onClickActivarRiego(View v) {
         Log.d("tag", "Activar riego");
         write("E");
+        this.status.riegoActivado = true;
+        this.status.notificar();
     }
 
 

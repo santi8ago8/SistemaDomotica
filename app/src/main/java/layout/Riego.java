@@ -152,7 +152,7 @@ public class Riego extends Fragment implements StatusUpdate {
     public void Update() {
         this.statusriego1on.setText(this.mainActivity.status.hora_riego_1_on.toString(MainActivity.formatterTime));
         this.statusriego2on.setText(this.mainActivity.status.hora_riego_2_on.toString(MainActivity.formatterTime));
-        this.statusriego.setText(this.mainActivity.status.Sriego ? MainActivity.mainActivity.getString(R.string.regando) : MainActivity.mainActivity.getString(R.string.no_regando));
+        this.statusriego.setText(this.mainActivity.status.riegoActivado ? "Riego activado" : "Riego desactivado");
     }
 
     /**
