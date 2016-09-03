@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                         BluetoothDevice bd = (BluetoothDevice) devices[i];
                         Log.d("tag", bd.getName());
                         Log.d("tag", bd.getAddress());
-                        if (bd.getAddress().equals("20:15:06:03:15:58")) {  //usar esta:20:15:06:03:15:58
+                        if (bd.getName().equals("JSJS")){ // bd.getAddress().equals("20:15:06:03:15:58")) {
                             pos = i;
                         }
 
