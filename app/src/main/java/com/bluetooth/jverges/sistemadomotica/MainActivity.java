@@ -265,9 +265,12 @@ public class MainActivity extends AppCompatActivity
                             Log.d("tag", "Socket:");
                             Log.d("tag", socket == null ? "null" : socket.toString());
                             if (socket == null) {
-                                socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+                                socket = device.createInsecureRfcommSocketToServiceRecord(uuids[0].getUuid());
+                                //socket = device.createRfcommSocketToServiceRecord();
 
                                 socket.connect();
+
+
                             }
                             inStream = socket.getInputStream();
                             outputStream = socket.getOutputStream();
@@ -456,6 +459,18 @@ public class MainActivity extends AppCompatActivity
             outputStream.write(s.getBytes());
         } catch (IOException e) {
             Log.d("tag", "fail write in bt, try to reconnect");
+            try {
+                inStream.close();
+                outputStream.close();
+                socket.close();
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            socket = null;
+            inStream = null;
+            outputStream = null;
+            initWithThread();
             e.printStackTrace();
         } catch (Exception e) {
             Log.d("tag", "fail, ex");
