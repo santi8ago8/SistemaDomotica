@@ -135,9 +135,9 @@ public class Status {
     }
 
     public void addToNotify(StatusUpdate i) {
-        this.notificaciones.add(i);
+        //this.notificaciones.add(i);
         if (hasStatus) {
-            notificar();
+           // notificar();
         }
     }
 }

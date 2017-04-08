@@ -115,15 +115,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void handleMessage(Message msg) {
 
-                for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
+                /*for (int i = 0; i < MainActivity.mainActivity.toNotify.size(); i++) {
                     Log.d("tag", "run on ui thread");
                     String s = MainActivity.mainActivity.toNotify.get(i);
                     MainActivity.mainActivity.toNotify.remove(i--);
                     MainActivity.mainActivity.status.parseStatus(s);
-                }
+                }*/
             }
         };
-        initWithThread();
+        eventoRiego(true);
+
+
     }
 
     @Override
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        this.write("S");
+        //this.write("S");
     }
 
     @Override
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity
                         BluetoothDevice bd = (BluetoothDevice) devices[i];
                         Log.d("tag", bd.getName());
                         Log.d("tag", bd.getAddress());
-                        if (bd.getName().equals("JSJS")){ // bd.getAddress().equals("20:15:06:03:15:58")) {
+                        if (bd.getName().equals("JSJS")) { // bd.getAddress().equals("20:15:06:03:15:58")) {
                             pos = i;
                         }
 
@@ -455,7 +457,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void write(String s) {
-        try {
+       /* try {
             outputStream.write(s.getBytes());
         } catch (IOException e) {
             Log.d("tag", "fail write in bt, try to reconnect");
@@ -476,7 +478,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("tag", "fail, ex");
 
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void onClick2(View v) {
@@ -528,8 +530,9 @@ public class MainActivity extends AppCompatActivity
     public void onClickActivarRiego(View v) {
         Log.d("tag", "Activar riego");
         write("E");
-        this.status.riegoActivado = true;
-        this.status.notificar();
+        eventoRiego(true);
+        /*this.status.riegoActivado = true;
+        this.status.notificar();*/
     }
 
 
@@ -637,6 +640,16 @@ public class MainActivity extends AppCompatActivity
         }).start();
     }
 
+    private void initWithThread2() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                eventoRiego(true);
+            }
+        }).start();
+    }
+
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -726,7 +739,7 @@ public class MainActivity extends AppCompatActivity
     public void bloquearPantalla(boolean bloquear) {
         Log.d("tag", "bloqueo del teclado: " + Boolean.toString(bloquear));
         if (bloquear && dialogBloq == null) {
-            Log.d("tag","bloquear pantalla");
+            Log.d("tag", "bloquear pantalla");
             dialogBloq = ProgressDialog.show(MainActivity.this, "",
                     getString(R.string.espera_teclado), true);
             dialogBloq.show();

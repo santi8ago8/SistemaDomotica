@@ -25,7 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
  * Use the {@link Riego#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Riego extends Fragment implements StatusUpdate {
+public class Riego extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -73,10 +73,10 @@ public class Riego extends Fragment implements StatusUpdate {
     // TODO: Rename and change types and number of parameters
     public static Riego newInstance(String param1, String param2) {
         Riego fragment = new Riego();
-        Bundle args = new Bundle();
+        /*Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -95,7 +95,7 @@ public class Riego extends Fragment implements StatusUpdate {
         // Inflate the layout for this fragment
 
         View rootView = this.view = inflater.inflate(R.layout.fragment_riego, container, false);
-        this.statusriego = (TextView) rootView.findViewById(R.id.status_riego);
+        /*this.statusriego = (TextView) rootView.findViewById(R.id.status_riego);
         this.textView8 = (TextView) rootView.findViewById(R.id.textView8);
         this.button4 = (Button) rootView.findViewById(R.id.button4);
         this.button3 = (Button) rootView.findViewById(R.id.button3);
@@ -116,11 +116,11 @@ public class Riego extends Fragment implements StatusUpdate {
         }
 
         //asignación de tags.
-        this.btn1On.setTag(new StatusItem(R.string.configurar_prendido, "C", this.mainActivity.status.hora_riego_1_on, true));
-        this.btn2On.setTag(new StatusItem(R.string.configurar_prendido, "D", this.mainActivity.status.hora_riego_2_on, true));
+        //this.btn1On.setTag(new StatusItem(R.string.configurar_prendido, "C", this.mainActivity.status.hora_riego_1_on, true));
+        //this.btn2On.setTag(new StatusItem(R.string.configurar_prendido, "D", this.mainActivity.status.hora_riego_2_on, true));
 
-        this.mainActivity.status.addToNotify(this);
-
+        //this.mainActivity.status.addToNotify(this);
+*/
         return view;
     }
 
@@ -148,12 +148,13 @@ public class Riego extends Fragment implements StatusUpdate {
         mListener = null;
     }
 
-    @Override
+    /*@Override
     public void Update() {
         this.statusriego1on.setText(this.mainActivity.status.hora_riego_1_on.toString(MainActivity.formatterTime));
         this.statusriego2on.setText(this.mainActivity.status.hora_riego_2_on.toString(MainActivity.formatterTime));
         this.statusriego.setText(this.mainActivity.status.riegoActivado ? "Riego activado" : "Riego desactivado");
-    }
+    }*
+    /*/
 
     /**
      * This interface must be implemented by activities that contain this

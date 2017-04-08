@@ -39,4 +39,6 @@
     <string name="activado">Activado</string>
     <string name="alarma_panico">Alarma en estado pánico</string>
     <string name="espera_teclado">Esperando que se termine de usar el teclado...</string>
+    <string name="_10_30_hs">10:30 Hs.</string>
+    <string name="hora_de_encendido">Hora de encendido:</string>
 </resources>
